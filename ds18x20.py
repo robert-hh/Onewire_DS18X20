@@ -48,38 +48,32 @@ class DS18X20(object):
         """
         Start the temp conversion on one DS18x20 device.
         Pass the 8-byte bytes object with the ROM of the specific device you want to read.
-        If only one DS18x20 device is attached to the bus you may omit the rom parameter.
         """
-        if (rom==None) and (len(self.roms)>0):
-            rom=self.roms[0]
-        if rom!=None:
-            rom = rom or self.roms[0]
-            ow = self.ow
-            ow.reset()
-            ow.select_rom(rom)
-            ow.write_byte(0x44)  # Convert Temp
+        assert rom is not None, "ROM address missing or empty"
+        ow = self.ow
+        ow.reset()
+        ow.select_rom(rom)
+        ow.write_byte(0x44)  # Convert Temp
 
-    def read_temp_async(self, rom=None):
+    def read_temp_async(self, rom):
         """
         Read the temperature of one DS18x20 device if the convertion is complete,
         otherwise return None.
         """
         if self.isbusy():
             return None
-        if (rom==None) and (len(self.roms)>0):
-            rom=self.roms[0]
-        if rom==None:
-            return None
+
+        assert rom is not None, "ROM address missing or empty"
+
+        ow = self.ow
+        ow.reset()
+        ow.select_rom(rom)
+        ow.write_byte(0xbe)  # Read scratch
+        data = ow.read_bytes(9)
+        if ow.crc8(data) == 0:
+            return self.convert_temp(rom[0], data)
         else:
-            ow = self.ow
-            ow.reset()
-            ow.select_rom(rom)
-            ow.write_byte(0xbe)  # Read scratch
-            data = ow.read_bytes(9)
-            if ow.crc8(data) == 0:
-                return self.convert_temp(rom[0], data)
-            else:
-                return None
+            return None
 
     def convert_temp(self, rom0, data):
         """
