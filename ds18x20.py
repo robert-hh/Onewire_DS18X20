@@ -102,6 +102,9 @@ class DS18X20(object):
                 return 100 * temp_read - 25 + (count_per_c - count_remain) // count_per_c
         elif rom0 == 0x28:
             temp = None
+            # Mask power-on reset value 0550h (85°C)
+            if temp_msb == 0x05 and temp_lsb == 0x50:
+                return None
             if self.fp:
                 temp = (temp_msb << 8 | temp_lsb) / 16
             else:
