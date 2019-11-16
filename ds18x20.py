@@ -46,13 +46,16 @@ class DS18X20(object):
 
     def start_conversion(self, rom=None):
         """
-        Start the temp conversion on one DS18x20 device.
+        Start the temp conversion on one or all DS18x20 devices.
         Pass the 8-byte bytes object with the ROM of the specific device you want to read.
+        Alternatively, pass None in order to start conversion on all devices.
         """
-        assert rom is not None, "ROM address missing or empty"
         ow = self.ow
         ow.reset()
-        ow.select_rom(rom)
+        if rom is None:
+            ow.write_byte(ow.CMD_SKIPROM)
+        else:
+            ow.select_rom(rom)
         ow.write_byte(0x44)  # Convert Temp
 
     def read_temp_async(self, rom=None):
