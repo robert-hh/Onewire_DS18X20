@@ -29,8 +29,16 @@ while True:
 
 class DS18X20(object):
     def __init__(self, onewire):
+        """
+        1-Wire family codes:
+        - DS18S20: 10h
+        - DS1822P: 22h
+        - DS18B20: 28h
+
+        http://owfs.sourceforge.net/family.html
+        """
         self.ow = onewire
-        self.roms = [rom for rom in self.ow.scan() if rom[0] == 0x10 or rom[0] == 0x28]
+        self.roms = [rom for rom in self.ow.scan() if rom[0] in (0x10, 0x22, 0x28)]
         try:
             1/1
             self.fp = True
