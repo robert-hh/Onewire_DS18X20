@@ -78,23 +78,27 @@ class OneWire:
         for i in range(len(buf)):
             buf[i] = self.readbyte()
 
-    def writebit(self, value):
+    def writebit(self, value, powerpin=None):
         sleep_us = time.sleep_us
         pin = self.pin
 
         i = self.disable_irq()
         pin(0)
-        sleep_us(1)
+        # sleep_us(1) # dropped for shorter pulses
         pin(value)
         sleep_us(60)
-        pin(1)
-        sleep_us(1)
+        if powerpin:
+            pin(1)
+            powerpin(1)
+        else:
+            pin(1)
         self.enable_irq(i)
 
-    def writebyte(self, value):
-        for i in range(8):
+    def writebyte(self, value, powerpin=None):
+        for i in range(7):
             self.writebit(value & 1)
             value >>= 1
+        self.writebit(value & 1, powerpin)
 
     def write(self, buf):
         for b in buf:
