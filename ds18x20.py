@@ -23,9 +23,12 @@ class DS18X20:
     def scan(self):
         return [rom for rom in self.ow.scan() if rom[0] in (0x10, 0x22, 0x28)]
 
-    def convert_temp(self):
+    def convert_temp(self, rom=None):
         self.ow.reset()
-        self.ow.writebyte(self.ow.CMD_SKIPROM)
+        if rom is None:
+            self.ow.writebyte(self.ow.CMD_SKIPROM)
+        else:
+            self.ow.select_rom(rom)
         self.ow.writebyte(CMD_CONVERT)
 
     def read_scratch(self, rom):
