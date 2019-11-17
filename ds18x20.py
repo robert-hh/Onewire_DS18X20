@@ -2,6 +2,7 @@
 # MIT license; Copyright (c) 2016 Damien P. George
 
 from micropython import const
+from machine import Pin
 
 CMD_CONVERT = const(0x44)
 CMD_RDSCRATCH = const(0xbe)
@@ -16,12 +17,15 @@ class DS18X20:
         self.powerpin = None
 
     def powermode(self, powerpin=None):
+        if self.powerpin is not None: # deassert strong pull-up
+            self.powerpin(0)
         self.ow.writebyte(self.ow.CMD_SKIPROM)
         self.ow.writebyte(CMD_RDPOWER)
         self.power = self.ow.readbit()
         if powerpin is not None:
+            assert type(powerpin) is Pin, "Parameter must be a Pin object"
             self.powerpin = powerpin
-        assert self.power == 1 or self.powerpin is not None, "Missing definition of the power Pin"
+            self.powerpin.init(mode=Pin.OUT, value=0)
         return self.power
 
     def scan(self):
@@ -36,7 +40,7 @@ class DS18X20:
         self.ow.writebyte(CMD_CONVERT, self.powerpin)
 
     def read_scratch(self, rom):
-        if self.power == 0: # deassert strong pull-up
+        if self.powerpin is not None: # deassert strong pull-up
             self.powerpin(0)
         self.ow.reset()
         self.ow.select_rom(rom)
@@ -46,7 +50,7 @@ class DS18X20:
         return self.buf
 
     def write_scratch(self, rom, buf):
-        if self.power == 0: # deassert strong pull-up
+        if self.powerpin is not None: # deassert strong pull-up
             self.powerpin(0)
         self.ow.reset()
         self.ow.select_rom(rom)
