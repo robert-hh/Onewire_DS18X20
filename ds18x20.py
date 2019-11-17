@@ -12,6 +12,8 @@ class DS18X20:
     def __init__(self, onewire):
         self.ow = onewire
         self.buf = bytearray(9)
+
+    def read_power_supply()
         self.ow.writebyte(self.ow.CMD_SKIPROM)
         self.ow.writebyte(CMD_RDPOWER)
         self.powermode = self.ow.readbit()
