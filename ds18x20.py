@@ -12,9 +12,13 @@ class DS18X20:
     def __init__(self, onewire):
         self.ow = onewire
         self.buf = bytearray(9)
+        self.powermode = 1 # strong power
+
+    def powermode(self):
         self.ow.writebyte(self.ow.CMD_SKIPROM)
         self.ow.writebyte(CMD_RDPOWER)
         self.powermode = self.ow.readbit()
+        return self.powermode
 
     def scan(self):
         return [rom for rom in self.ow.scan() if rom[0] in (0x10, 0x22, 0x28)]
