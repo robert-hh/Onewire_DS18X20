@@ -1,7 +1,7 @@
 import time
 from machine import Pin
-from ds18x20_new import DS18X20
-from onewire_new import OneWire
+from ds18x20 import DS18X20
+from onewire import OneWire
 
 #DS18B20 data line connected to pin P10
 ow = OneWire(Pin('P10'))
