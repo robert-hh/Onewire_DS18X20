@@ -98,6 +98,3 @@ class DS18X20:
 
     def kelvin(self, celsius):
         return celsius + 273.15 if celsius is not None else None
-
-    def rankine(self, celsius):
-        return celsius * 1.8 + 491.67 if celsius is not None else None

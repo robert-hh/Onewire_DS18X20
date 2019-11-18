@@ -113,10 +113,8 @@ resoltion. The figures are:
 
 ### deg_f = fahrenheit(celsius)
 ### deg_k = kelvin(celsius)
-### deg_r = rankine(celsius)
 
 Three fuctions converting the celsius value returned by read_temp() into other scales.
-the rankine scale is surely the least important. 
   
 -------
 ## Class DS18X20Single
