@@ -101,3 +101,13 @@ class DS18X20:
 
     def rankine(self, celsius):
         return celsius * 1.8 + 491.67 if celsius is not None else None
+
+    def assert_conversion_success(self, value):
+        """
+        According to the specification of the DS18B20 sensor [1] (Page 6),
+        > The power-on reset value of the temperature register is +85°C (0550h).
+
+        This method at least keeps this fact here. However, checking must
+        be done by the calling code which is aware of the context.
+        """
+        assert value != 85.0, 'Power-on reset value'
