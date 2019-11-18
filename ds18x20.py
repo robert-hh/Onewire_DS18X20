@@ -8,6 +8,8 @@ CMD_CONVERT = const(0x44)
 CMD_RDSCRATCH = const(0xbe)
 CMD_WRSCRATCH = const(0x4e)
 CMD_RDPOWER = const(0xb4)
+PULLUP_ON = const(1)
+PULLUP_OFF = const(0)
 
 class DS18X20:
     def __init__(self, onewire):
@@ -18,7 +20,7 @@ class DS18X20:
 
     def powermode(self, powerpin=None):
         if self.powerpin is not None: # deassert strong pull-up
-            self.powerpin(0)
+            self.powerpin(PULLUP_OFF)
         self.ow.writebyte(self.ow.CMD_SKIPROM)
         self.ow.writebyte(CMD_RDPOWER)
         self.power = self.ow.readbit()
@@ -29,9 +31,13 @@ class DS18X20:
         return self.power
 
     def scan(self):
+        if self.powerpin is not None: # deassert strong pull-up
+            self.powerpin(PULLUP_OFF)
         return [rom for rom in self.ow.scan() if rom[0] in (0x10, 0x22, 0x28)]
 
     def convert_temp(self, rom=None):
+        if self.powerpin is not None: # deassert strong pull-up
+            self.powerpin(PULLUP_OFF)
         self.ow.reset()
         if rom is None:
             self.ow.writebyte(self.ow.CMD_SKIPROM)
@@ -41,7 +47,7 @@ class DS18X20:
 
     def read_scratch(self, rom):
         if self.powerpin is not None: # deassert strong pull-up
-            self.powerpin(0)
+            self.powerpin(PULLUP_OFF)
         self.ow.reset()
         self.ow.select_rom(rom)
         self.ow.writebyte(CMD_RDSCRATCH)
@@ -51,7 +57,7 @@ class DS18X20:
 
     def write_scratch(self, rom, buf):
         if self.powerpin is not None: # deassert strong pull-up
-            self.powerpin(0)
+            self.powerpin(PULLUP_OFF)
         self.ow.reset()
         self.ow.select_rom(rom)
         self.ow.writebyte(CMD_WRSCRATCH)

@@ -16,6 +16,7 @@ class OneWire:
     CMD_READROM = const(0x33)
     CMD_MATCHROM = const(0x55)
     CMD_SKIPROM = const(0xcc)
+    PULLUP_ON = const(1)
 
     def __init__(self, pin):
         self.pin = pin
@@ -89,7 +90,7 @@ class OneWire:
         sleep_us(60)
         if powerpin:
             pin(1)
-            powerpin(1)
+            powerpin(PULLUP_ON)
         else:
             pin(1)
         self.enable_irq(i)
