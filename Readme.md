@@ -91,6 +91,10 @@ The third by is the configuration. See the DS18B20 data sheet for details.
 
 Get the temperature reading of the addressed device as degree Celsuis.
 In case of an CRC error, None is returned.
+  
+**Warning**: After power up and before a conversion cycle has been performed, 
+the DS18x20 sensors will return the value 85°C. Since this is also a valid return value, the 
+calling app must decide, whether it is a reasonable value in the given context.
 
 ### res = resolution(rom [, bits])
 
@@ -114,6 +118,33 @@ resoltion. The figures are:
 Three fuctions converting the celsius value returned by read_temp() into other scales.
 the rankine scale is surely the least important. 
   
+-------
+## Class DS18X20Single
+
+sensor = DS18X20Single(onewire)
+
+Convenience Class derived from DS18X20. It makes using the clase with a 
+single sensor a little bit easier by not requiring a rom parameter for
+convert_temp() and read_temp(), and calling scan() as part of the init
+procedure. If more than one device is connected to the bus,
+an AssertionError is raised.
+
+## Specific Methods
+
+### convert_temp()
+
+Start temperature conversion with the single device on the bus.
+
+### read_temp([rom=None])
+
+Get the temperature reading of the addressed device as degree Celsuis from the
+single device on the bus. In case of an CRC error, None is returned.
+  
+**Warning**: After power up and before a conversion cycle has been performed, 
+the DS18x20 sensors will return the value 85°C. Since this is also a valid return value, the 
+calling app must decide, whether it is a reasonable value in the given context.
+     
+Besides these specific methods, all other methods of the master classe work as documented.
 -------
 ## Example
 
@@ -149,7 +180,7 @@ while True:
   
   The same example using parasitic power and setting the resolution of the first device: 
 
-```
+``` python
 import time
 from machine import Pin
 from ds18x20 import DS18X20
@@ -171,5 +202,25 @@ while True:
     for rom in roms:
         print(temp.read_temp(rom), end=" ")
     print()
+    temp.convert_temp()
+```
+   
+Example using the class DS18X20Single
+  
+``` python
+import time
+from machine import Pin
+from ds18x20_single import DS18X20Single
+from onewire import OneWire
+
+# DS18B20 data line connected to pin P10
+ow = OneWire(Pin('P10'))
+temp = DS18X20Single(ow)
+print("Powermode = ", temp.powermode(Pin('P11')))
+
+temp.convert_temp()
+while True:
+    time.sleep(1)
+    print(temp.read_temp())
     temp.convert_temp()
 ```
