@@ -37,7 +37,7 @@ writebytes send all bytes in the buffer.
 ### select_rom(rom)
 
 Send the message to select a specific device based on the rom number. This number
-will be obtained by scan(). The sleected device will respond to further read and write
+will be obtained by scan(). The selected device will respond to further read and write
 calls.
 
 ### devices = scan()
@@ -46,7 +46,7 @@ Return the list of rom numbers of all devices on the onwire bus.
 
 ### _search_rom()
 
-Internal function. Search devices on the bus and obtain the rom number.
+Internal function. Search devices on the bus and obtain the rom number.  
 
 -------
 ## Class DS18X20
@@ -85,12 +85,27 @@ Read the scratchpad memory of the addressed device. 9 bytes of data will be retu
 
 Write to the scratchpad of the addressed devices. data shall be three bytes. 
 The first two bytes are the high and low alarm temperature. 
-The third by is the configuration. See the DS18b20 data sheet for details.
+The third by is the configuration. See the DS18B20 data sheet for details.
 
 ### read_temp(rom)
 
 Get the temperature reading of the addressed device as degree Celsuis.
 In case of an CRC error, None is returned.
+
+### res = resolution(rom [, bits])
+
+Get or set the resolution of a sensor. If the paramter bits is specified,
+the resolution is set to that value. Valid values are 9 though 12.
+If bits is not specified, the actual resolution is returned. The value set is not 
+permanent. After a power cycle it is reset to 12. The conversion time depends on the
+resoltion. The figures are: 
+
+|bits|Conversion time (ms)|
+|:---:|:---:|
+|9|94|
+|10|188|
+|11|375|
+|12|750|  
 
 -------
 ## Example
@@ -115,6 +130,33 @@ from onewire_new import OneWire
 ow = OneWire(Pin('P10'))
 temp = DS18X20(ow)
 roms = temp.scan()
+
+temp.convert_temp()
+while True:
+    time.sleep(1)
+    for rom in roms:
+        print(temp.read_temp(rom), end=" ")
+    print()
+    temp.convert_temp()
+```
+  
+  The same example using parasitic power and setting the resolution of the first device: 
+
+```
+import time
+from machine import Pin
+from ds18x20 import DS18X20
+from onewire import OneWire
+
+#DS18B20 data line connected to pin P10
+ow = OneWire(Pin('P10'))
+temp = DS18X20(ow)
+pm = temp.powermode(Pin('P11'))
+print("Powermode = ", pm)
+roms = temp.scan()
+
+temp.resolution(roms[0], 9)
+print("Resolution", temp.resolution(roms[0]))
 
 temp.convert_temp()
 while True:

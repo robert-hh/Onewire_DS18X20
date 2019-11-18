@@ -15,6 +15,7 @@ class DS18X20:
     def __init__(self, onewire):
         self.ow = onewire
         self.buf = bytearray(9)
+        self.config = bytearray(3)
         self.power = 1 # strong power supply by default
         self.powerpin = None
 
@@ -82,3 +83,12 @@ class DS18X20:
                 return None
         except AssertionError:
             return None
+
+    def resolution(self, rom, bits=None):
+        if bits is not None and 9 <= bits <= 12:
+            self.config[2] = ((bits - 9) << 5) | 0x1f
+            self.write_scratch(rom, self.config)
+            return bits
+        else:
+            data = self.read_scratch(rom)
+            return ((data[4] >> 5) & 0x03) + 9
