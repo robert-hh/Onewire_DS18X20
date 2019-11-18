@@ -92,3 +92,12 @@ class DS18X20:
         else:
             data = self.read_scratch(rom)
             return ((data[4] >> 5) & 0x03) + 9
+
+    def fahrenheit(self, celsius):
+        return celsius * 1.8 + 32 if celsius is not None else None
+
+    def kelvin(self, celsius):
+        return celsius + 273.15 if celsius is not None else None
+
+    def rankine(self, celsius):
+        return celsius * 1.8 + 491.67 if celsius is not None else None
