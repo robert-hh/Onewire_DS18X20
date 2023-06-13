@@ -12,11 +12,11 @@ import time
 import machine
 
 class OneWire:
-    CMD_SEARCHROM = const(0xf0)
-    CMD_READROM = const(0x33)
-    CMD_MATCHROM = const(0x55)
-    CMD_SKIPROM = const(0xcc)
-    PULLUP_ON = const(1)
+    CMD_SEARCHROM = 0xf0
+    CMD_READROM = 0x33
+    CMD_MATCHROM = 0x55
+    CMD_SKIPROM = 0xcc
+    PULLUP_ON = 1
 
     def __init__(self, pin):
         self.pin = pin
