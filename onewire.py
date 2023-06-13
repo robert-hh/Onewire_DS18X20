@@ -12,11 +12,11 @@ import time
 import machine
 
 class OneWire:
-    CMD_SEARCHROM = const(0xf0)
-    CMD_READROM = const(0x33)
-    CMD_MATCHROM = const(0x55)
-    CMD_SKIPROM = const(0xcc)
-    PULLUP_ON = const(1)
+    CMD_SEARCHROM = 0xf0
+    CMD_READROM = 0x33
+    CMD_MATCHROM = 0x55
+    CMD_SKIPROM = 0xcc
+    PULLUP_ON = 1
 
     def __init__(self, pin):
         self.pin = pin
@@ -90,7 +90,7 @@ class OneWire:
         sleep_us(60)
         if powerpin:
             pin(1)
-            powerpin(PULLUP_ON)
+            powerpin(self.PULLUP_ON)
         else:
             pin(1)
         self.enable_irq(i)
@@ -110,7 +110,7 @@ class OneWire:
         Select a specific device to talk to. Pass in rom as a bytearray (8 bytes).
         """
         self.reset()
-        self.writebyte(CMD_MATCHROM)
+        self.writebyte(self.CMD_MATCHROM)
         self.write(rom)
 
     def crc8(self, data):
@@ -143,7 +143,7 @@ class OneWire:
     def _search_rom(self, l_rom, diff):
         if not self.reset():
             return None, 0
-        self.writebyte(CMD_SEARCHROM)
+        self.writebyte(self.CMD_SEARCHROM)
         if not l_rom:
             l_rom = bytearray(8)
         rom = bytearray(8)

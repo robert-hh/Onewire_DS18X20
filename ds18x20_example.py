@@ -4,7 +4,7 @@ from ds18x20 import DS18X20
 from onewire import OneWire
 
 #DS18B20 data line connected to pin P10
-ow = OneWire(Pin('P10'))
+ow = OneWire(Pin('P10', Pin.OPEN_DRAIN))
 temp = DS18X20(ow)
 print("Powermode = ", temp.powermode(Pin('P11')))
 roms = temp.scan()
