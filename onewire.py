@@ -33,6 +33,8 @@ class OneWire:
         """
         Perform the onewire reset function.
         Returns True if a device asserted a presence pulse, False otherwise.
+        @param required Determine if it is required to check presence pulse. If True, AssertError is
+                        raised if no device on the bus responds. Otherwise it silently ignores that state.
         """
         sleep_us = time.sleep_us
         pin = self.pin
@@ -90,7 +92,7 @@ class OneWire:
         sleep_us(60)
         if powerpin:
             pin(1)
-            powerpin(PULLUP_ON)
+            powerpin(self.PULLUP_ON)
         else:
             pin(1)
         self.enable_irq(i)
@@ -110,7 +112,7 @@ class OneWire:
         Select a specific device to talk to. Pass in rom as a bytearray (8 bytes).
         """
         self.reset()
-        self.writebyte(CMD_MATCHROM)
+        self.writebyte(self.CMD_MATCHROM)
         self.write(rom)
 
     def crc8(self, data):
@@ -120,8 +122,7 @@ class OneWire:
         crc = 0
         for i in range(len(data)):
            crc ^= data[i] ## just re-using crc as intermediate
-           crc = (self.crctab1[crc & 0x0f] ^
-                  self.crctab2[(crc >> 4) & 0x0f])
+           crc = (self.crctab1[crc & 0x0f] ^ self.crctab2[(crc >> 4) & 0x0f])
         return crc
 
     def scan(self):
@@ -143,7 +144,7 @@ class OneWire:
     def _search_rom(self, l_rom, diff):
         if not self.reset():
             return None, 0
-        self.writebyte(CMD_SEARCHROM)
+        self.writebyte(self.CMD_SEARCHROM)
         if not l_rom:
             l_rom = bytearray(8)
         rom = bytearray(8)
