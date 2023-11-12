@@ -33,6 +33,8 @@ class OneWire:
         """
         Perform the onewire reset function.
         Returns True if a device asserted a presence pulse, False otherwise.
+        @param required Determine if it is required to check presence pulse. If True, AssertError is
+                        raised if no device on the bus responds. Otherwise it silently ignores that state.
         """
         sleep_us = time.sleep_us
         pin = self.pin
@@ -120,8 +122,7 @@ class OneWire:
         crc = 0
         for i in range(len(data)):
            crc ^= data[i] ## just re-using crc as intermediate
-           crc = (self.crctab1[crc & 0x0f] ^
-                  self.crctab2[(crc >> 4) & 0x0f])
+           crc = (self.crctab1[crc & 0x0f] ^ self.crctab2[(crc >> 4) & 0x0f])
         return crc
 
     def scan(self):

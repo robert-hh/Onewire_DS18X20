@@ -46,48 +46,61 @@ class DS18X20:
             self.ow.select_rom(rom)
         self.ow.writebyte(CMD_CONVERT, self.powerpin)
 
-    def read_scratch(self, rom):
+    def read_scratch(self, rom=None):
         if self.powerpin is not None: # deassert strong pull-up
             self.powerpin(PULLUP_OFF)
         self.ow.reset()
-        self.ow.select_rom(rom)
+        if rom is None:
+            self.ow.writebyte(self.ow.CMD_SKIPROM)
+        else:
+            self.ow.select_rom(rom)
         self.ow.writebyte(CMD_RDSCRATCH)
         self.ow.readinto(self.buf)
         assert self.ow.crc8(self.buf) == 0, 'CRC error'
         return self.buf
 
-    def write_scratch(self, rom, buf):
+    def write_scratch(self, buf, rom=None):
         if self.powerpin is not None: # deassert strong pull-up
             self.powerpin(PULLUP_OFF)
         self.ow.reset()
-        self.ow.select_rom(rom)
+        if rom is None:
+            self.ow.writebyte(self.ow.CMD_SKIPROM)
+        else:
+            self.ow.select_rom(rom)
         self.ow.writebyte(CMD_WRSCRATCH)
         self.ow.write(buf)
 
-    def read_temp(self, rom):
+    def read_temp(self, rom=None):
         try:
             buf = self.read_scratch(rom)
-            if rom[0] == 0x10:
-                if buf[1]:
-                    t = buf[0] >> 1 | 0x80
-                    t = -((~t + 1) & 0xff)
+            if rom is not None:
+                if rom[0] == 0x10:
+                    if buf[1]:
+                        t = buf[0] >> 1 | 0x80
+                        t = -((~t + 1) & 0xff)
+                    else:
+                        t = buf[0] >> 1
+                    return t - 0.25 + (buf[7] - buf[6]) / buf[7]
+                elif rom[0] in (0x22, 0x28):
+                    t = buf[1] << 8 | buf[0]
+                    if t & 0x8000: # sign bit set
+                        t = -((t ^ 0xffff) + 1)
+                    return t / 16
                 else:
-                    t = buf[0] >> 1
-                return t - 0.25 + (buf[7] - buf[6]) / buf[7]
-            elif rom[0] in (0x22, 0x28):
+                    return None
+            else:
+                # family codes 0x22 or 0x28 are taken by default
                 t = buf[1] << 8 | buf[0]
                 if t & 0x8000: # sign bit set
                     t = -((t ^ 0xffff) + 1)
                 return t / 16
-            else:
-                return None
         except AssertionError:
             return None
 
-    def resolution(self, rom, bits=None):
+    def resolution(self, rom=None, bits=None):
         if bits is not None and 9 <= bits <= 12:
             self.config[2] = ((bits - 9) << 5) | 0x1f
-            self.write_scratch(rom, self.config)
+            self.write_scratch(self.config, rom)
             return bits
         else:
             data = self.read_scratch(rom)
