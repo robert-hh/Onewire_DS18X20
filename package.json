@@ -1,0 +1,9 @@
+{
+  "urls": [
+    ["ds18x20.py", "github:robert-hh/Onewire_DS18X20/ds18x20.py"],
+    ["onewire.py", "github:robert-hh/Onewire_DS18X20/onewire.py"],
+    ["ds18x20_single.py", "github:robert-hh/Onewire_DS18X20/ds18x20_single.py"]
+  ],
+  "version": "1.0.0",
+  "deps": []
+}
