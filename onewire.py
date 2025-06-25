@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 #
+# Copyright (c) 2019, Pycom Limited.
+#
+# This software is licensed under the GNU GPL version 3 or any
+# later version, with permitted additional terms. For more information
+# see the Pycom Licence v1.0 document supplied with this file, or
+# available at https://www.pycom.io/opensource/licensing
+#
 # The crc8 implementation is a Python port of the C code published here:
 # http://lentz.com.au/blog/tag/crc-table-generator
-# As far as suitable, the copyrigth notice and the disclaimer of the link apply
+# As far as suitable, the copyrigth notice and the disclaimer of the link
+# apply for the CRC calculation.
 #
 """
 OneWire library for MicroPython
